@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
        4 -> page3 flipped
        5 -> finale
     */
-    const totalPages = pages.length; // number of image pages
+    const totalPages = pages.length -1 ; // number of image pages
     const sequence = [];
     // build sequence array:
     // gift
