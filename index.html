@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>A Magical Birthday Story</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Poiret+One&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="background-container"></div>
+
+    <!-- Music (will play when user first advances) -->
+    <audio id="backgroundMusic" loop src="magical_music.mp3"></audio>
+
+    <!-- STEP: Gift -->
+    <section class="step active" id="step-gift" data-scene="gift">
+        <div class="center-content">
+            <div class="gift-container" id="giftContainer" aria-label="Gift box">
+                <div class="gift-box">
+                    <div class="gift-lid"></div>
+                    <div class="gift-bow"></div>
+                </div>
+                <p class="instruction-text">A surprise is waiting...</p>
+            </div>
+            <p class="hint-text">Scroll up to begin</p>
+        </div>
+    </section>
+
+    <!-- STEP: Storybook (single step visually) -->
+    <section class="step" id="step-book" data-scene="book">
+        <div class="center-content">
+            <div class="storybook-container" id="storybookContainer">
+                <div class="book" id="book">
+                    <div class="book-cover" id="bookCover">
+                        <div class="cover-front">
+                            <h2 class="book-title">Your Story</h2>
+                        </div>
+                        <div class="cover-back"></div>
+                    </div>
+
+                    <!-- Page 1 -->
+                    <div class="page" id="page1" data-page-index="0">
+                        <div class="page-front">
+                            <!-- <img class="page-image" src="Pictures/image1.jpeg" alt="Page 1 image"/> -->
+                        </div>
+                        <div class="page-back">
+                            <!-- optional backside (can be same or different) -->
+                            <!-- <img class="page-image" src="Pictures/image1.jpeg" alt="Page 1 back"/> -->
+                        </div>
+                    </div>
+
+                    <!-- Page 2 -->
+                    <div class="page" id="page2" data-page-index="1">
+                        <div class="page-front">
+                            <img class="page-image" src="Pictures/image2.jpeg" alt="Page 2 image"/>
+                        </div>
+                        <div class="page-back">
+                            <!-- <img class="page-image" src="Pictures/image2.jpeg" alt="Page 2 back"/> -->
+                        </div>
+                    </div>
+
+                    <!-- Page 3 -->
+                    <div class="page" id="page3" data-page-index="2">
+                        <div class="page-front">
+                            <img class="page-image" src="Pictures/image3.jpeg" alt="Page 3 image"/>
+                        </div>
+                        <div class="page-back">
+                            <!-- <img class="page-image" src="Pictures/image3.jpeg" alt="Page 3 back"/> -->
+                        </div>  
+                    </div>
+                </div>
+            </div>
+            <p class="hint-text">Scroll up to open the book and flip pages</p>
+        </div>
+    </section>
+
+    <!-- STEP: Finale -->
+    <section class="step" id="step-finale" data-scene="finale">
+        <div class="center-content">
+            <div class="finale-container">
+                <div class="finale-card">
+                    <svg class="floral-svg" viewBox="0 0 400 400" aria-hidden="true">
+                        <path id="vine1" d="M10,200 C40,100 150,100 200,200 S360,300 390,200" />
+                        <path id="vine2" d="M10,210 C40,310 150,310 200,210 S360,110 390,210" />
+                    </svg>
+                    <h1 class="finale-greeting">Happy Birthday</h1>
+                    <h2 class="finale-name">Manvanth!</h2>
+                    <p class="finale-wish">Wishing you a day as magical as this story, and a year filled with wonderful new beginnings. May all your dreams blossom.</p>
+                </div>
+            </div>
+            <p class="hint-text">Scroll down to go back</p>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
