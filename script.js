@@ -1,4 +1,4 @@
-// Scroll-driven step controller with book page flips and images
+// script.js (updated)
 document.addEventListener('DOMContentLoaded', () => {
     const backgroundMusic = document.getElementById('backgroundMusic');
 
@@ -14,43 +14,41 @@ document.addEventListener('DOMContentLoaded', () => {
         finale: document.getElementById('step-finale'),
     };
 
-    /* SEQUENCE:
-       0 -> gift (closed)
-       1 -> book cover visible (book front page shown, cover not opened)
-       2 -> cover opened (cover flips) [we'll combine 1 & 2: first scroll to 'open cover']
-       2 -> page1 flipped (first inside page turned)
-       3 -> page2 flipped
-       4 -> page3 flipped
-       5 -> finale
+    // Record initial z-index (so we can restore when un-flipping)
+    const initialZIndices = pages.map(p => {
+        const z = window.getComputedStyle(p).zIndex;
+        p.dataset.initialZ = (z && z !== 'auto') ? z : '';
+        return p.dataset.initialZ;
+    });
+
+    /* Sequence build (no off-by-one)
+       0 -> gift
+       1 -> book-show
+       2 -> book-open
+       3 -> page-0 (first page)
+       4 -> page-1 (second page)
+       ...
+       last -> finale
     */
-    const totalPages = pages.length -1 ; // number of image pages
     const sequence = [];
-    // build sequence array:
-    // gift
     sequence.push({ name: 'gift' });
-    // book cover (show book)
     sequence.push({ name: 'book-show' });
-    // book open (flip cover)
     sequence.push({ name: 'book-open' });
-    // each page flip is a step
-    for (let i = 0; i < totalPages; i++) sequence.push({ name: `page-${i}` });
-    // finale
+
+    const totalPages = pages.length - 1;
+    for (let i = -1; i < totalPages; i++) sequence.push({ name: `page-${i}` });
+
     sequence.push({ name: 'finale' });
 
     let seqIndex = 0;
-    let busy = false; // simple throttle to prevent rapid changes
+    let busy = false; // throttle
     const THROTTLE = 600; // ms
 
     // Helper: show/hide top-level sections
     function showSectionForScene(sceneName) {
-        // Decide which section to make active based on current sequence item
-        if (sceneName === 'gift') {
-            activateSection(stepsSections.gift);
-        } else if (sceneName.startsWith('book') || sceneName.startsWith('page')) {
-            activateSection(stepsSections.book);
-        } else if (sceneName === 'finale') {
-            activateSection(stepsSections.finale);
-        }
+        if (sceneName === 'gift') activateSection(stepsSections.gift);
+        else if (sceneName.startsWith('book') || sceneName.startsWith('page')) activateSection(stepsSections.book);
+        else if (sceneName === 'finale') activateSection(stepsSections.finale);
     }
 
     function activateSection(sectionEl) {
@@ -58,64 +56,93 @@ document.addEventListener('DOMContentLoaded', () => {
         sectionEl.classList.add('active');
     }
 
+    // Only change classes that need changing (avoid re-triggering animations)
+    function updatePagesFlip(targetCount) {
+        // targetCount = number of pages that should be flipped (e.g., pageIndex + 1)
+        pages.forEach((p, i) => {
+            const shouldFlip = i < targetCount;
+            const isFlipped = p.classList.contains('flipped');
+
+            if (shouldFlip && !isFlipped) {
+                // new flip -> add class (this will animate only newly flipped page)
+                p.classList.add('flipped');
+            } else if (!shouldFlip && isFlipped) {
+                // un-flip (when rewinding)
+                p.classList.remove('flipped');
+            }
+
+            // Visual stacking: make flipped pages stack by their index so later pages are above earlier ones
+            if (shouldFlip) {
+                p.style.zIndex = 1000 + i; // higher i -> higher z-index
+            } else {
+                // restore initial z (or clear inline style)
+                p.style.zIndex = p.dataset.initialZ || '';
+            }
+        });
+    }
+
+    // Utility: try to play music on first interaction
+    function ensureMusicPlays() {
+        if (backgroundMusic && backgroundMusic.paused) {
+            backgroundMusic.play().catch(() => { /* ignore autoplay restrictions */ });
+        }
+    }
+
     // Apply visuals for a particular sequence index
     function applySequenceState(index) {
         const item = sequence[index];
-        // reset states
+
+        // Preserve page flip state when possible (don't blindly remove .flipped)
+        // Reset top-level UI flags that are scene-specific
         giftContainer.classList.remove('open');
         storybookContainer.classList.remove('visible', 'opening', 'open');
         bookCover.classList.remove('flipped');
-        pages.forEach(p => p.classList.remove('flipped'));
-
-        // Show music on the first interaction (play attempt)
-        function ensureMusicPlays() {
-            if (backgroundMusic && backgroundMusic.paused) {
-                backgroundMusic.play().catch(() => { /* ignore autoplay block */ });
-            }
-        }
 
         if (item.name === 'gift') {
             showSectionForScene('gift');
-            // Nothing else; gift closed
+            updatePagesFlip(0); // no pages flipped
         } else if (item.name === 'book-show') {
             showSectionForScene('book');
-            // make the book visible (but cover closed)
             storybookContainer.classList.add('visible');
+            updatePagesFlip(0);
             ensureMusicPlays();
         } else if (item.name === 'book-open') {
             showSectionForScene('book');
             storybookContainer.classList.add('visible', 'opening');
-            // small delayed flip for nicer timing
-            setTimeout(() => {
-                bookCover.classList.add('flipped');
-            }, 300);
+            // flip the cover after a short delay for nice timing
+            setTimeout(() => bookCover.classList.add('flipped'), 300);
+            updatePagesFlip(0);
             ensureMusicPlays();
         } else if (item.name.startsWith('page-')) {
             showSectionForScene('book');
-            // ensure book is open & visible
             storybookContainer.classList.add('visible', 'opening', 'open');
+            // ensure cover looks opened
             bookCover.classList.add('flipped');
-            // flip all pages up to the current page index
+
             const pageIndex = parseInt(item.name.split('-')[1], 10);
-            for (let i = 0; i <= pageIndex; i++) {
-                const p = pages[i];
-                if (p) p.classList.add('flipped');
-            }
+            const targetCount = pageIndex + 1; // flip pages 0..pageIndex
+            updatePagesFlip(targetCount);
             ensureMusicPlays();
         } else if (item.name === 'finale') {
             showSectionForScene('finale');
+            updatePagesFlip(pages.length);
             ensureMusicPlays();
+        }
+
+        // Accessibility hint: focus book when appropriate
+        if (item.name === 'book-show' || item.name.startsWith('page-') || item.name === 'book-open') {
+            book.setAttribute('tabindex', '-1');
+            book.focus({ preventScroll: true });
         }
     }
 
-    // Initialize state
+    // Initialize
     applySequenceState(seqIndex);
 
     // Advance / rewind sequence
     function go(delta) {
         if (busy) return;
         if (delta > 0) {
-            // move forward (user scrolled up in your requested convention)
             if (seqIndex < sequence.length - 1) {
                 seqIndex++;
                 busy = true;
@@ -123,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => busy = false, THROTTLE);
             }
         } else if (delta < 0) {
-            // move backward
             if (seqIndex > 0) {
                 seqIndex--;
                 busy = true;
@@ -133,24 +159,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /* WHEEL handling:
-       Many mice/touchpads produce deltaY > 0 when scrolling down, < 0 when scrolling up.
-       The user asked "when scrolled up it should go to next step" — to match natural mapping,
-       we'll interpret deltaY < 0 (scroll up) as forward/next and deltaY > 0 (scroll down) as back.
-       But above go() uses delta > 0 = forward. So we invert the wheel delta here.
-    */
-    let lastWheel = 0;
+    // WHEEL handling (invert so scroll up -> forward)
     window.addEventListener('wheel', (e) => {
         e.preventDefault();
         const raw = e.deltaY;
-        const normalized = raw === 0 ? 0 : (raw > 0 ? -1 : 1); // invert: up -> +1
-        // Debounce small deltas (touchpads can be noisy)
         if (Math.abs(raw) < 2) return;
+        const normalized = raw > 0 ? -1 : 1; // up -> 1
         go(normalized);
-        lastWheel = Date.now();
     }, { passive: false });
 
-    // TOUCH support: detect vertical swipe
+    // TOUCH support: vertical swipe
     let touchStartY = null;
     window.addEventListener('touchstart', (e) => {
         if (e.touches && e.touches.length) touchStartY = e.touches[0].clientY;
@@ -159,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (touchStartY === null) return;
         const endY = (e.changedTouches && e.changedTouches[0].clientY) || touchStartY;
         const diff = touchStartY - endY;
-        // swipe up -> diff > 30 -> next
         if (Math.abs(diff) > 30) {
             const direction = diff > 0 ? 1 : -1; // up = 1 (next)
             go(direction);
@@ -167,42 +184,19 @@ document.addEventListener('DOMContentLoaded', () => {
         touchStartY = null;
     }, { passive: true });
 
-    // Also allow keyboard navigation (ArrowUp -> next, ArrowDown -> prev)
+    // Keyboard navigation
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowUp') { go(1); }
-        if (e.key === 'ArrowDown') { go(-1); }
+        if (e.key === 'ArrowUp') go(1);
+        if (e.key === 'ArrowDown') go(-1);
     });
 
-    // Also allow clicking the gift to open it (for accessibility / fallback)
+    // Gift click (fallback / accessibility)
     giftContainer.addEventListener('click', () => {
-        // if we are at gift state, treat click as forward
         if (sequence[seqIndex] && sequence[seqIndex].name === 'gift') {
             go(1);
         } else {
-            // toggle open for a nice touch
             giftContainer.classList.toggle('open');
-            backgroundMusic.play().catch(()=>{});
+            backgroundMusic.play().catch(() => { });
         }
     });
-
-    // Small accessibility: when the user reaches the book-show state, focus the book
-    // not necessary, but helps screen readers / keyboard users
-    function onSequenceChange() {
-        const item = sequence[seqIndex];
-        if (item.name === 'book-show' || item.name.startsWith('page-') || item.name === 'book-open') {
-            book.setAttribute('tabindex', '-1');
-            book.focus({ preventScroll: true });
-        }
-    }
-
-    // Hook into applySequenceState by calling onSequenceChange after each update
-    // We'll wrap applySequenceState to call it (simple approach)
-    const originalApply = applySequenceState;
-    applySequenceState = function(index) {
-        originalApply(index);
-        onSequenceChange();
-    };
-
-    // Ensure initial visible class for book container if sequence starts beyond 0
-    if (seqIndex > 0) applySequenceState(seqIndex);
 });
