@@ -1,4 +1,4 @@
-/* === Base Colors, Fonts === */
+/* --- Base Colors, Fonts --- */
 :root {
   --deep-purple: #2E0249;
   --dark-blue: #0f153a;
@@ -31,7 +31,7 @@ body {
   min-height: 100vh;
 }
 
-/* === Background === */
+/* --- Background Blur --- */
 .background-container {
   position: fixed;
   inset: 0;
@@ -43,7 +43,7 @@ body {
   filter: blur(12px);
 }
 
-/* === Step Container === */
+/* --- Step Container --- */
 .step {
   position: absolute;
   inset: 0;
@@ -77,7 +77,7 @@ body {
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* === Gift Box === */
+/* --- Gift Box --- */
 .gift-container {
   text-align: center;
   user-select: none;
@@ -89,7 +89,8 @@ body {
   height: 180px;
   background: linear-gradient(180deg, var(--deep-purple), #49107a);
   border-radius: 14px;
-  box-shadow: 0 10px 40px var(--shadow), 0 0 18px rgba(78, 204, 163, 0.04) inset;
+  box-shadow: 0 10px 40px var(--shadow),
+              0 0 18px rgba(78, 204, 163, 0.04) inset;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,6 +121,7 @@ body {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
   z-index: 10;
 }
+
 .gift-bow::before { left: 68px; transform: rotate(-40deg); }
 .gift-bow::after  { left: 98px; transform: rotate(40deg); }
 
@@ -135,7 +137,7 @@ body {
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* === Storybook === */
+/* --- Storybook Container --- */
 .storybook-container {
   perspective: 1600px;
   width: 100%;
@@ -162,66 +164,72 @@ body {
   transform: rotateY(0deg) scale(1.08);
 }
 
-/* --- Glow --- */
 .book::before {
   content: '';
   position: absolute;
   inset: -20px;
+  background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
+              radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
   filter: blur(30px);
   z-index: -5;
   border-radius: 10px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
-    radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
 }
 
-/* === Book Cover === */
+/* --- Book Cover --- */
 .book-cover {
   position: absolute;
   inset: 0;
   transform-origin: left;
   transform-style: preserve-3d;
   transition: transform 1s cubic-bezier(.65, 0, .35, 1);
-  z-index: 50;
-  border: 2px solid rgba(255, 215, 0, 0.4);
-  border-radius: 8px;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
-}
-
-.cover-front, .cover-back {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backface-visibility: hidden;
-}
-
-.cover-front {
-  background: linear-gradient(180deg, #2b0a45, #3f1266);
-  border-right: 2px solid rgba(255, 215, 0, 0.4);
-}
-
-.cover-back {
-  background: linear-gradient(180deg, #1b0b2e, #210b36);
-  border-left: 2px solid rgba(255, 215, 0, 0.4);
-  transform: rotateY(180deg);
-}
-
-.book-title {
-  font-family: 'Cinzel Decorative', serif;
-  color: var(--gold);
-  font-size: 2.6rem;
-  padding: 12px 20px;
-  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  z-index: 40;
 }
 
 .storybook-container.open .book-cover {
   transform: rotateY(-180deg);
 }
 
-/* === Pages === */
+.cover-front,
+.cover-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #2b0a45, #3f1266);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.cover-front {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.cover-front::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2b0a45, #3f1266);
+  box-shadow: inset 4px 0 15px rgba(0, 0, 0, 0.5);
+  transform: rotateY(180deg);
+}
+
+.cover-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, #1b0b2e, #210b36);
+}
+
+.book-title {
+  font-family: 'Cinzel Decorative', serif;
+  color: var(--gold);
+  font-size: 2.6rem;
+  letter-spacing: 1px;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+/* --- Pages --- */
 .page {
   position: absolute;
   inset: 0;
@@ -229,50 +237,50 @@ body {
   transform-style: preserve-3d;
   transition: transform 1s ease-in-out;
   backface-visibility: hidden;
-  border-radius: 8px;
+  overflow: hidden;
   background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
-  border-left: 2px solid rgba(255, 215, 0, 0.4);
-  border-right: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
-  overflow: visible;
+  border: 2px solid rgba(255, 215, 0, 0.2);
+  border-radius: 6px;
 }
 
-.page.flipped {
-  transform: rotateY(-180deg);
-  z-index: 100;
-}
-
-.page-front,
-.page-back {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backface-visibility: hidden;
-  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
-}
-
-.page-back {
-  transform: rotateY(180deg);
-}
-
+.page img,
 .page-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: block;
   padding: 8px;
+}
+
+.page::before,
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
   border-radius: 6px;
 }
 
-/* Layer Order */
-#page1 { z-index: 40; }
-#page2 { z-index: 30; }
-#page3 { z-index: 20; }
-#page4 { z-index: 10; }
+.page::before {
+  background: linear-gradient(180deg, #2E0249, #1b0b2e);
+}
 
-/* === Finale === */
+.page::after {
+  background: linear-gradient(180deg, #1b0b2e, #2E0249);
+  transform: rotateY(180deg);
+}
+
+.page.flipped {
+  transform: rotateY(-180deg);
+  z-index: 1000;
+}
+
+/* Layer ordering */
+#page1 { z-index: 30; }
+#page2 { z-index: 20; }
+#page3 { z-index: 10; }
+
+/* --- Finale Card --- */
 .finale-container {
   width: 100%;
   display: flex;
@@ -335,7 +343,7 @@ body {
   margin-top: 12px;
 }
 
-/* === Responsive === */
+/* --- Responsive --- */
 @media (max-width:900px) {
   .book { width: 420px; height: 300px; }
   .book-title { font-size: 2rem; }
@@ -347,4 +355,285 @@ body {
   .book-title { font-size: 1.6rem; }
   .finale-name { font-size: 2rem; }
   .hint-text { font-size: 0.85rem; }
+}
+/* === Storybook === */
+.storybook-container {
+  perspective: 1600px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.book {
+  width: 520px;
+  height: 380px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s cubic-bezier(.22, .9, .3, 1), opacity 0.8s;
+  transform: rotateY(-30deg) scale(0.85);
+  opacity: 0;
+}
+
+.storybook-container.visible .book {
+  opacity: 1;
+  transform: rotateY(-12deg) scale(0.98);
+}
+
+.storybook-container.opening .book {
+  transform: rotateY(0deg) scale(1.08);
+}
+
+/* Common book surfaces */
+.book-cover,
+.page {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* === Cover === */
+.book-cover {
+  transform-origin: left;
+  transition: transform 1s cubic-bezier(.65, 0, .35, 1);
+  z-index: 40;
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+}
+
+.cover-front,
+.cover-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backface-visibility: hidden;
+  background: linear-gradient(180deg, #2b0a45, #3f1266);
+  border-radius: 8px;
+}
+
+.cover-front {
+  border-right: 2px solid rgba(255, 215, 0, 0.4);
+}
+
+.cover-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, #1b0b2e, #210b36);
+  border-left: 2px solid rgba(255, 215, 0, 0.4);
+}
+
+.book-title {
+  font-family: 'Cinzel Decorative', serif;
+  color: var(--gold);
+  font-size: 2.6rem;
+  padding: 12px 20px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  z-index: 5;
+}
+
+.storybook-container.open .book-cover {
+  transform: rotateY(-180deg);
+}
+
+/* === Pages === */
+.page {
+  transform-origin: left;
+  transition: transform 1s ease-in-out;
+  backface-visibility: hidden;
+  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
+  border-left: 2px solid rgba(255, 215, 0, 0.4);
+  border-right: 2px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.1);
+}
+
+.page.flipped {
+  transform: rotateY(-180deg);
+  z-index: 1000;
+}
+
+.page-front,
+.page-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
+}
+
+.page-back {
+  transform: rotateY(180deg);
+}
+
+.page-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Layer ordering */
+#page1 { z-index: 30; }
+#page2 { z-index: 20; }
+#page3 { z-index: 10; }
+
+/* Glow around book */
+.book::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  filter: blur(30px);
+  z-index: -5;
+  background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
+              radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
+  border-radius: 10px;
+}
+/* === Storybook === */
+.storybook-container {
+  perspective: 1600px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.book {
+  width: 520px;
+  height: 380px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1s cubic-bezier(.22, .9, .3, 1), opacity 0.8s;
+  transform: rotateY(-30deg) scale(0.85);
+  opacity: 0;
+}
+
+.storybook-container.visible .book {
+  opacity: 1;
+  transform: rotateY(-12deg) scale(0.98);
+}
+
+.storybook-container.opening .book {
+  transform: rotateY(0deg) scale(1.08);
+}
+
+/* === Cover === */
+.book-cover {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform-style: preserve-3d;
+  transition: transform 1s cubic-bezier(.65, 0, .35, 1);
+  z-index: 50;
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+  border-radius: 8px;
+}
+
+.cover-front,
+.cover-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backface-visibility: hidden;
+}
+
+.cover-front {
+  background: linear-gradient(180deg, #2b0a45, #3f1266);
+  border-right: 2px solid rgba(255, 215, 0, 0.4);
+}
+
+.cover-back {
+  background: linear-gradient(180deg, #1b0b2e, #210b36);
+  transform: rotateY(180deg);
+  border-left: 2px solid rgba(255, 215, 0, 0.4);
+}
+
+.book-title {
+  font-family: 'Cinzel Decorative', serif;
+  color: var(--gold);
+  font-size: 2.6rem;
+  padding: 12px 20px;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.storybook-container.open .book-cover {
+  transform: rotateY(-180deg);
+}
+
+/* === Pages === */
+.page {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: left;
+  transform-style: preserve-3d;
+  transition: transform 1s ease-in-out;
+  backface-visibility: hidden;
+  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
+  border-left: 2px solid rgba(255, 215, 0, 0.4);
+  border-right: 2px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
+  border-radius: 8px;
+  overflow: visible;
+}
+
+/* Front and back of each page */
+.page-front,
+.page-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
+}
+
+.page-back {
+  transform: rotateY(180deg);
+}
+
+/* Flip animation */
+.page.flipped {
+  transform: rotateY(-180deg);
+  z-index: 100;
+}
+
+/* Image styling */
+.page-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* z-index layering */
+#page1 { z-index: 40; }
+#page2 { z-index: 30; }
+#page3 { z-index: 20; }
+#page4 { z-index: 10; }
+
+.book::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  filter: blur(30px);
+  z-index: -5;
+  background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
+              radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
+  border-radius: 10px;
 }
