@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             backgroundMusic.volume = 0.6; // lower volume
         }
     }
-
+    ensureMusicPlays();
     // Apply visuals for a particular sequence index
     function applySequenceState(index) {
         const item = sequence[index];
