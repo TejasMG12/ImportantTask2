@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function ensureMusicPlays() {
         if (backgroundMusic && backgroundMusic.paused) {
             backgroundMusic.play().catch(() => { /* ignore autoplay restrictions */ });
+            backgroundMusic.volume = 0.6; // lower volume
         }
     }
 
