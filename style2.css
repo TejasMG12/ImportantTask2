@@ -1,0 +1,446 @@
+:root {
+--deep-purple: #2E0249;
+--dark-blue: #0f153a;
+--teal: #4ECCA3;
+--gold: #FFD700;
+--muted-bg: #0b0720;
+--text-light: #F6F6F9;
+--shadow: rgba(0, 0, 0, 0.45);
+--book-page-top: #5d1aa3;
+--book-page-bottom: #3a0e63;
+}
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Great+Vibes&family=Poiret+One&family=Marcellus&family=Poppins&display=swap');
+
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+}
+
+html, body {
+height: 100%;
+}
+body {
+font-family: 'Poiret One', sans-serif;
+background: linear-gradient(180deg, var(--muted-bg) 0%, #260bc0 10%);
+color: var(--text-light);
+overflow: hidden;
+min-height: 100vh;
+}
+.background-container {
+position: fixed;
+inset: 0;
+z-index: -2;
+background:
+radial-gradient(ellipse at 20% 10%, rgba(78, 204, 163, 0.05), transparent 5%),
+radial-gradient(ellipse at 80% 90%, rgba(46, 2, 73, 0.25), transparent 20%),
+linear-gradient(135deg, #07021a, #0b1230 60%, #071028);
+filter: blur(12px);
+}
+.step {
+position: absolute;
+inset: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.step.active {
+opacity: 1;
+pointer-events: auto;
+}
+.center-content {
+width: 100%;
+max-width: 980px;
+padding: 40px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 20px;
+}
+.hint-text {
+font-size: 0.9rem;
+opacity: 0.7;
+margin-top: 12px;
+color: rgba(255, 255, 255, 0.7);
+}
+.gift-container {
+text-align: center;
+user-select: none;
+}
+.gift-box {
+position: relative;
+width: 180px;
+height: 180px;
+background: linear-gradient(180deg, var(--deep-purple), #49107a);
+border-radius: 14px;
+box-shadow: 0 10px 40px var(--shadow),
+0 0 18px rgba(78, 204, 163, 0.04) inset;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.gift-lid {
+position: absolute;
+top: -24px;
+left: -10px;
+width: 200px;
+height: 48px;
+border-radius: 10px;
+background: linear-gradient(180deg, #5d1aa3, #3a0e63);
+transition: transform 0.7s cubic-bezier(.2, .9, .2, 1);
+box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+z-index: 5;
+}
+.gift-bow::before,
+.gift-bow::after {
+content: '';
+position: absolute;
+width: 34px;
+height: 80px;
+background: linear-gradient(180deg, var(--gold), #e6c200);
+border-radius: 50%;
+top: -62px;
+filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+z-index: 10;
+}
+.gift-bow::before { left: 68px; transform: rotate(-40deg); }
+.gift-bow::after  { left: 98px; transform: rotate(40deg); }
+.gift-container.open .gift-lid {
+transform: translateY(-120px) rotate(12deg);
+}
+.instruction-text {
+margin-top: 18px;
+font-size: 1.15rem;
+font-weight: 600;
+color: var(--text-light);
+text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+.storybook-container {
+perspective: 1600px;
+width: 100%;
+display: flex;
+justify-content: center;
+}
+.book {
+width: 520px;
+height: 380px;
+position: relative;
+transform-style: preserve-3d;
+transition: transform 1s cubic-bezier(.22, .9, .3, 1), opacity 0.8s;
+transform: rotateY(-30deg) scale(0.85);
+opacity: 0;
+}
+.storybook-container.visible .book {
+opacity: 1;
+transform: rotateY(-12deg) scale(0.98);
+}
+.storybook-container.opening .book {
+transform: rotateY(0deg) scale(1.08);
+}
+.book::before {
+content: '';
+position: absolute;
+inset: -20px;
+filter: blur(30px);
+z-index: -5;
+background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
+radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
+border-radius: 10px;
+}
+.book-cover {
+position: absolute;
+inset: 0;
+transform-origin: left;
+transform-style: preserve-3d;
+transition: transform 1s cubic-bezier(.65, 0, .35, 1);
+z-index: 50;
+border: 2px solid rgba(255, 215, 0, 0.4);
+box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
+border-radius: 8px;
+}
+.storybook-container.open .book-cover {
+transform: rotateY(-180deg);
+}
+.cover-front,
+.cover-back {
+position: absolute;
+inset: 0;
+border-radius: 8px;
+display: flex;
+justify-content: center;
+align-items: center;
+backface-visibility: hidden;
+}
+.cover-front {
+background: linear-gradient(180deg, #2b0a45, #3f1266);
+border-right: 2px solid rgba(255, 215, 0, 0.4);
+box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+.cover-front::after {
+content: "";
+position: absolute;
+inset: 0;
+border-radius: 8px;
+background: linear-gradient(180deg, #2b0a45, #3f1266);
+box-shadow: inset 4px 0 15px rgba(0, 0, 0, 0.5);
+transform: rotateY(180deg);
+}
+.cover-back {
+background: linear-gradient(180deg, #1b0b2e, #210b36);
+transform: rotateY(180deg);
+border-left: 2px solid rgba(255, 215, 0, 0.4);
+}
+.book-title {
+font-family: 'Cinzel Decorative', serif;
+color: var(--gold);
+font-size: 2.6rem;
+padding: 12px 20px;
+letter-spacing: 1px;
+text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+.page {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+transform-origin: left;
+transform-style: preserve-3d;
+transition: transform 1s ease-in-out;
+backface-visibility: hidden;
+background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
+border-left: 2px solid rgba(255, 215, 0, 0.4);
+border-right: 2px solid rgba(255, 215, 0, 0.4);
+box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
+border-radius: 8px;
+overflow: visible;
+}
+.page img,
+.page-image {
+width: 100%;
+height: 100%;
+object-fit: contain;
+display: block;
+padding: 8px;
+border-radius: 6px;
+}
+.page::before,
+.page::after {
+content: "";
+position: absolute;
+inset: 0;
+backface-visibility: hidden;
+border-radius: 6px;
+}
+.page::before {
+background: linear-gradient(180deg, #2E0249, #1b0b2e);
+}
+.page::after {
+background: linear-gradient(180deg, #1b0b2e, #2E0249);
+transform: rotateY(180deg);
+}
+.page.flipped {
+transform: rotateY(-180deg);
+z-index: 100;
+}
+.page-front,
+.page-back {
+position: absolute;
+inset: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+backface-visibility: hidden;
+border-radius: 8px;
+background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
+flex-direction: column;
+justify-content: space-between;
+padding: 20px 30px;
+text-align: center;
+font-family: 'Marcellus', serif;
+color: #f8f5ff;
+}
+.page-back {
+transform: rotateY(180deg);
+}
+#page1 { z-index: 40; }
+#page2 { z-index: 30; }
+#page3 { z-index: 20; }
+#page4 { z-index: 10; }
+.finale-container {
+width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.finale-card {
+position: relative;
+width: 90%;
+max-width: 680px;
+padding: 36px;
+background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+border-radius: 18px;
+border: 1px solid rgba(255, 215, 0, 0.15);
+text-align: center;
+box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+}
+.floral-svg {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+}
+.floral-svg path {
+fill: none;
+stroke: var(--teal);
+stroke-width: 2;
+stroke-linecap: round;
+opacity: 0.18;
+stroke-dasharray: 1000;
+stroke-dashoffset: 1000;
+animation: drawVines 3s ease-out 0.3s forwards;
+}
+@keyframes drawVines {
+to { stroke-dashoffset: 0; }
+}
+.finale-greeting {
+font-family: 'Cinzel Decorative', serif;
+color: var(--gold);
+font-size: 2.2rem;
+}
+.finale-name {
+font-family: 'Cinzel Decorative', serif;
+color: var(--teal);
+font-size: 3.6rem;
+margin: 6px 0;
+}
+.finale-wish {
+color: rgba(255, 255, 255, 0.9);
+line-height: 1.6;
+font-size: 1.05rem;
+margin-top: 12px;
+}
+.page-content {
+padding: 24px;
+text-align: center;
+display: flex;
+flex-direction: column;
+justify-content: center;
+gap: 16px;
+font-family: "Poppins", sans-serif;
+color: var(--text-light);
+}
+.page-content h2 {
+color: var(--gold);
+font-size: 1.6rem;
+text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.page-content h3 {
+color: var(--teal);
+font-size: 1.3rem;
+margin-bottom: 8px;
+}
+.page-content p,
+.page-content li,
+.page-content blockquote {
+font-size: 1rem;
+line-height: 1.5;
+margin: 4px 0;
+}
+.page-content ul {
+list-style: none;
+padding: 0;
+}
+.page-content blockquote {
+font-style: italic;
+border-left: 3px solid var(--gold);
+padding-left: 10px;
+}
+.page-front h2,
+.page-back h2 {
+font-family: 'Cinzel Decorative', serif;
+font-size: 2rem;
+color: var(--gold);
+margin-bottom: 10px;
+text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+.page-front p,
+.page-back p {
+font-size: 1.05rem;
+line-height: 1.6;
+color: rgba(255, 255, 255, 0.9);
+font-family: 'Poiret One', sans-serif;
+}
+.handwritten {
+font-family: 'Great Vibes', cursive;
+color: var(--teal);
+font-size: 1.6rem;
+margin-top: 8px;
+text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.page-gallery {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 18px;
+flex-wrap: wrap;
+margin-top: 20px;
+}
+.photo {
+position: relative;
+width: 130px;
+height: 120px;
+background: #fff;
+border-radius: 10px;
+border: 2px solid rgba(255, 215, 0, 0.4);
+box-shadow:
+0 8px 20px rgba(0, 0, 0, 0.4),
+inset 0 0 4px rgba(255, 215, 0, 0.25);
+transform-origin: center;
+transition: transform 0.4s ease, box-shadow 0.3s ease;
+padding: 6px 6px 20px 6px;
+cursor: pointer;
+}
+.photo img {
+width: 100%;
+height: 90%;
+object-fit: cover;
+border-radius: 6px;
+border: 1px solid rgba(255, 215, 0, 0.2);
+}
+.photo span {
+display: block;
+position: absolute;
+bottom: 4px;
+left: 0;
+right: 0;
+font-family: 'Great Vibes', cursive;
+font-size: 0.9rem;
+color: #3a0e63;
+text-align: center;
+}
+.photo:nth-child(1) { transform: rotate(-7deg); }
+.photo:nth-child(2) { transform: rotate(4deg); }
+.photo:nth-child(3) { transform: rotate(-3deg); }
+.photo:hover {
+transform: rotate(0deg) scale(1.07);
+box-shadow: 0 12px 25px rgba(255, 215, 0, 0.35);
+z-index: 5;
+}
+.photo:hover img {
+border-color: rgba(255, 215, 0, 0.6);
+}
+@media (max-width:900px) {
+.book { width: 420px; height: 300px; }
+.book-title { font-size: 2rem; }
+.finale-name { font-size: 2.6rem; }
+}
+@media (max-width:480px) {
+.book { width: 320px; height: 240px; }
+.book-title { font-size: 1.6rem; }
+.finale-name { font-size: 2rem; }
+.hint-text { font-size: 0.85rem; }
+}

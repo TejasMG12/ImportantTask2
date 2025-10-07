@@ -249,7 +249,7 @@ body {
   height: 100%;
   object-fit: contain;
   display: block;
-  padding: 8px;
+  padding: 0px;
 }
 
 .page::before,
@@ -636,4 +636,333 @@ body {
   background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
               radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
   border-radius: 10px;
+}
+.page-content {
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-light);
+}
+
+.page-content h2 {
+  color: var(--gold);
+  font-size: 1.6rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.page-content h3 {
+  color: var(--teal);
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+
+.page-content p,
+.page-content li,
+.page-content blockquote {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 4px 0;
+}
+
+.page-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.page-content blockquote {
+  font-style: italic;
+  border-left: 3px solid var(--gold);
+  padding-left: 10px;
+}
+
+.page-gallery {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  perspective: 800px;
+}
+
+.page-gallery img {
+  width: 28%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 5px solid #fff;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+  transform-origin: center;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* Add scrapbook-like twists for a natural messy look */
+.page-gallery img:nth-child(1) {
+  transform: rotate(-6deg) translateY(4px);
+}
+.page-gallery img:nth-child(2) {
+  transform: rotate(3deg) translateY(-6px);
+}
+.page-gallery img:nth-child(3) {
+  transform: rotate(-2deg) translateY(5px);
+}
+
+/* Hover animation for fun effect */
+.page-gallery img:hover {
+  transform: scale(1.08) rotate(0deg);
+  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+  z-index: 5;
+}
+
+.photo {
+  position: relative;
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+}
+
+.photo img {
+  width: 130px;
+  height: 110px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.photo span {
+  display: block;
+  font-size: 0.8rem;
+  font-family: 'Caveat', cursive;
+  margin-top: 4px;
+  color: #444;
+  text-align: center;
+}
+
+.photo:nth-child(1) { transform: rotate(-6deg); }
+.photo:nth-child(2) { transform: rotate(3deg); }
+.photo:nth-child(3) { transform: rotate(-2deg); }
+
+.photo:hover {
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.25);
+}
+
+/* --- Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Great+Vibes&family=Poiret+One&family=Marcellus&display=swap');
+
+/* --- Page Text Styling --- */
+.page-front, .page-back {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 30px;
+  text-align: center;
+  font-family: 'Marcellus', serif;
+  color: #f8f5ff;
+}
+
+.page-front h2, 
+.page-back h2 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: 10px;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+
+.page-front p, 
+.page-back p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Poiret One', sans-serif;
+}
+
+/* --- Fancy handwritten highlights --- */
+.handwritten {
+  font-family: 'Great Vibes', cursive;
+  color: var(--teal);
+  font-size: 1.6rem;
+  margin-top: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Scrapbook Gallery --- */
+.page-gallery {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* Each photo frame */
+.photo {
+  position: relative;
+  width: 130px;
+  height: 120px;
+  background: #fff;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    inset 0 0 4px rgba(255, 215, 0, 0.25);
+  transform-origin: center;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  padding: 6px 6px 20px 6px;
+  cursor: pointer;
+}
+
+/* Polaroid image itself */
+.photo img {
+  width: 100%;
+  height: 90%;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Caption area */
+.photo span {
+  display: block;
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.9rem;
+  color: #3a0e63;
+  text-align: center;
+}
+
+/* Twisted layout for scrapbook feel */
+.photo:nth-child(1) { transform: rotate(-7deg); }
+.photo:nth-child(2) { transform: rotate(4deg); }
+.photo:nth-child(3) { transform: rotate(-3deg); }
+
+.photo:hover {
+  transform: rotate(0deg) scale(1.07);
+  box-shadow: 0 12px 25px rgba(255, 215, 0, 0.35);
+  z-index: 5;
+}
+
+/* Add subtle border glow when active */
+.photo:hover img {
+  border-color: rgba(255, 215, 0, 0.6);
+}
+/* --- Refined Page Layout (better fit inside book) --- */
+.page-front, .page-back {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 24px;
+  text-align: center;
+  font-family: 'Marcellus', serif;
+  color: #f8f5ff;
+  /* overflow: hidden; */
+}
+
+/* Smaller & balanced headings */
+.page-front h2, 
+.page-back h2 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.6rem;
+  color: var(--gold);
+  margin-bottom: 6px;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Text body now more compact */
+.page-front p, 
+.page-back p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 auto;
+  width: 90%;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Poiret One', sans-serif;
+}
+
+/* Fancy handwritten subtitle */
+.handwritten {
+  font-family: 'Great Vibes', cursive;
+  color: var(--teal);
+  font-size: 1.2rem;
+  margin-top: 4px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Gallery now fits inside page --- */
+.page-gallery {
+  /* display: flex; */
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  /* flex-wrap: wrap; */
+  margin-top: 10px;
+  padding-bottom: 6px;
+}
+
+/* Photo size reduced and balanced */
+.photo {
+  position: relative;
+  width: 95px;
+  height: 90px;
+  background: #fff;
+  border-radius: 4px;
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  box-shadow:
+    0 6px 15px rgba(0, 0, 0, 0.4),
+    inset 0 0 4px rgba(255, 215, 0, 0.25);
+  transform-origin: center;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  padding: 4px 4px 16px 4px;
+  cursor: pointer;
+}
+
+.photo img {
+  width: 100%;
+  height: 85%;
+  /* object-fit: cover; */
+  border-radius: 2px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Caption below image */
+.photo span {
+  /* position: absolute; */
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.7rem;
+  color: #3a0e63;
+  text-align: center;
+}
+
+/* Subtle scrapbook rotation */
+.photo:nth-child(1) { transform: rotate(-5deg); }
+.photo:nth-child(2) { transform: rotate(3deg); }
+.photo:nth-child(3) { transform: rotate(-2deg); }
+
+.photo:hover {
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+  z-index: 5;
+}
+
+/* Responsive fine-tuning */
+@media (max-width: 600px) {
+  .page-front h2 { font-size: 1.3rem; }
+  .page-front p { font-size: 0.9rem; }
+  .photo { width: 80px; height: 75px; }
+  .photo span { font-size: 0.65rem; }
 }
