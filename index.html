@@ -2,176 +2,149 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>A Magical Birthday Story</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Poiret+One&display=swap"
-        rel="stylesheet">
+    <title>Happy Birthday</title>
 
-    <link rel="stylesheet" href="style.css" />
+    <!-- Greeting card fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./style.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Script -->
+    <script src="./script.js" defer></script>
 </head>
 
-<body>
-    <div class="background-container"></div>
+<body class="scroll-driven">
+    <!-- Scroll-driven scrapbook scene -->
+    <div class="scroll-container">
+        <div class="sticky-scene">
+            <div class="table-background" role="img" aria-label="Cozy wooden desk"></div>
 
-    <!-- Music (will play when user first advances) -->
-    <audio id="backgroundMusic" loop>
-        <source src="magical_music.mp3" type="audio/mpeg">
-    </audio>
+            <div id="zoomBook">
+                <input type="checkbox" id="cover_checkbox">
+                <input type="checkbox" id="page1_checkbox">
+                <input type="checkbox" id="page2_checkbox">
+                <input type="checkbox" id="page3_checkbox">
+                <input type="checkbox" id="page4_checkbox">
+                <input type="checkbox" id="page5_checkbox">
 
-    <!-- STEP: Gift -->
-    <section class="step active" id="step-gift" data-scene="gift">
-        <div class="center-content">
-            <div class="gift-container" id="giftContainer" aria-label="Gift box">
-                <div class="gift-box">
-                    <div class="gift-lid"></div>
-                    <div class="gift-bow"></div>
-                </div>
-                <p class="instruction-text">A surprise is waiting...</p>
-            </div>
-            <p class="hint-text">Scroll up to begin</p>
-        </div>
-    </section>
-
-    <!-- STEP: Storybook (single step visually) -->
-    <section class="step" id="step-book" data-scene="book">
-        <div class="center-content">
-            <div class="storybook-container" id="storybookContainer">
-                <div class="book" id="book">
-                    <div class="book-cover" id="bookCover">
-                        <div class="cover-front">
-                            <h2 class="book-title">Your Story</h2>
-                        </div>
-                        <div class="cover-back"></div>
+                <!-- Flip Book -->
+                <div id="flip_book">
+                    <div class="front_cover">
+                        <label for="cover_checkbox" id="cover"></label>
+                        <p class="page-message page-message--cover">Happy Birthday!</p>
                     </div>
 
-                    <!-- Page 1 -->
-                    <div class="page" id="page1" data-page-index="0">
-                        <div class="page-front">
-                            <div class="page-content">
-                                <h2>Today’s about celebrating the person who makes life a little brighter, funnier, and
-                                    definitely more interesting 💖</h2>
-                                <h3>Happy Birthday, Bunny! 🎉</h3>
-                                <div class="page-gallery">
-                                    <img src="Pictures/Anupama1.webp" alt="Bunny photo 1" />
-                                    <img src="Pictures/Sticker2.webp" alt="Bunny photo 2" />
-                                    <img src="Pictures/Anupama2.webp" alt="Bunny photo 3" />
-                                </div>
-                            </div>
+                    <div class="page" id="page1">
+                        <div class="front_page">
+                            <label for="page1_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/front_page_edge_shading.webp" alt="Front page edge shading">
+                            <img class="front_content" src="./assets/images/pages/page1.webp" alt="Front content">
+                            <p class="page-message page-message--corner">Wishing you the happiest of birthdays!</p>
                         </div>
-                        <div class="page-back"></div>
+
+                        <div class="back_page">
+                            <label for="page1_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/back_page_edge_shading.webp" alt="Back page edge shading">
+                            <img class="back_content" src="./assets/images/pages/page2.webp" alt="Back content">
+                            <p class="page-message page-message--bottom">May your day be filled with joy &amp; laughter</p>
+                        </div>
                     </div>
 
-                    <!-- Page 2 -->
-                    <div class="page" id="page2" data-page-index="1">
-                        <div class="page-front">
-                            <div class="page-content">
-                                <h2>About Bunny 💕</h2>
-                                <ul>
-                                    <li>The perfect combo of sweet heart + savage mouth 😏</li>
-                                    <li>Smile so contagious it should come with a warning ⚡</li>
-                                    <li>Knows how to tease, comfort, and confuse — all in one conversation 😜</li>
-                                    <li>Basically, trouble... but my favorite kind of trouble 💫</li>
-                                </ul>
-                                <div class="page-gallery">
-                                    <img src="Pictures/image1.jpeg" alt="About Bunny 1" />
-                                    <img src="Pictures/image2.jpeg" alt="About Bunny 2" />
-                                    <img src="Pictures/image3.jpeg" alt="About Bunny 3" />
-                                </div>
-                            </div>
+                    <div class="page" id="page2">
+                        <div class="front_page">
+                            <label for="page2_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/front_page_edge_shading.webp" alt="Front page edge shading">
+                            <img class="front_content" src="./assets/images/pages/page3.webp" alt="Front content">
+                            <p class="page-message page-message--corner">Here's to another year of adventures</p>
                         </div>
-                        <div class="page-back"></div>
+
+                        <div class="back_page">
+                            <label for="page2_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/back_page_edge_shading.webp" alt="Back page edge shading">
+                            <img class="back_content" src="./assets/images/pages/page4.webp" alt="Back content">
+                            <p class="page-message page-message--bottom">You deserve all the cake &amp; love today</p>
+                        </div>
                     </div>
 
-                    <!-- Page 3 -->
-                    <div class="page" id="page3" data-page-index="2">
-                        <div class="page-front">
-                            <div class="page-content">
-                                <h2>Why Bunny Is Special 🌟</h2>
-                                <ul>
-                                    <li>Always shows up with kindness (and the best one-liners 😂)</li>
-                                    <li>Turns random days into unforgettable memories 💭</li>
-                                    <li>Can make even the worst mood disappear with just one “oye” 😌</li>
-                                    <li>Makes friendship feel like a little bit of magic ✨</li>
-                                </ul>
-                                <div class="page-gallery">
-                                    <img src="Pictures/image4.jpeg" alt="Special Bunny 1" />
-                                    <img src="Pictures/image5.jpeg" alt="Special Bunny 2" />
-                                    <img src="Pictures/image7.jpeg" alt="Special Bunny 3" />
-                                </div>
-                            </div>
+                    <div class="page" id="page3">
+                        <div class="front_page">
+                            <label for="page3_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/front_page_edge_shading.webp" alt="Front page edge shading">
+                            <img class="front_content" src="./assets/images/pages/page5.webp" alt="Front content">
+                            <p class="page-message page-message--corner">Sending hugs &amp; birthday sparkles</p>
                         </div>
-                        <div class="page-back"></div>
+
+                        <div class="back_page">
+                            <label for="page3_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/back_page_edge_shading.webp" alt="Back page edge shading">
+                            <img class="back_content" src="./assets/images/pages/page6.webp" alt="Back content">
+                            <p class="page-message page-message--bottom">Hope every moment today feels magical</p>
+                        </div>
                     </div>
 
-                    <!-- Page 4 -->
-                    <div class="page" id="page4" data-page-index="3">
-                        <div class="page-front">
-                            <div class="page-content">
-                                <h2>Birthday Wishes 🎂</h2>
-                                <p>May your year be full of laughter, chaos (the fun kind), and good vibes only 🌈</p>
-                                <p>May every dream of yours find its way to you — just like your smile finds its way to
-                                    everyone’s heart 💕</p>
-                                <p>And maybe, just maybe, this year brings a little someone special (you already know
-                                    who 👀)</p>
-                                <div class="page-gallery">
-                                    <img src="Pictures/image8.jpeg" alt="Birthday Wish 1" />
-                                    <img src="Pictures/image9.jpeg" alt="Birthday Wish 2" />
-                                    <img src="Pictures/image10.jpeg" alt="Birthday Wish 3" />
-                                </div>
-                            </div>
+                    <div class="page" id="page4">
+                        <div class="front_page">
+                            <label for="page4_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/front_page_edge_shading.webp" alt="Front page edge shading">
+                            <img class="front_content" src="./assets/images/pages/page7.webp" alt="Front content">
+                            <p class="page-message page-message--corner">Cheers to you — today &amp; always!</p>
                         </div>
-                        <div class="page-back"></div>
+
+                        <div class="back_page">
+                            <label for="page4_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/back_page_edge_shading.webp" alt="Back page edge shading">
+                            <img class="back_content" src="./assets/images/pages/page8.webp" alt="Back content">
+                            <p class="page-message page-message--bottom">May all your dreams take flight this year</p>
+                        </div>
                     </div>
 
-                    <!-- Page 5 -->
-                    <div class="page" id="page5" data-page-index="4">
-                        <div class="page-front">
-                            <div class="page-content">
-                                <h2>Just So You Know 💌</h2>
-                                <blockquote>
-                                    “You’re not just a good friend, Bunny —
-                                    you’re the person I’ll always root for, tease endlessly,
-                                    and secretly adore a little bit too 🐰”
-                                </blockquote>
-                                <div class="page-gallery">
-                                    <img src="Pictures/image11.jpeg" alt="Final Bunny 1" />
-                                    <img src="Pictures/image12.jpeg" alt="Final Bunny 2" />
-                                    <img src="Pictures/image13.jpeg" alt="Final Bunny 3" />
-                                </div>
-                            </div>
+                    <div class="page" id="page5">
+                        <div class="front_page">
+                            <label for="page5_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/front_page_edge_shading.webp" alt="Front page edge shading">
+                            <img class="front_content" src="./assets/images/pages/page9.webp" alt="Front content">
+                            <p class="page-message page-message--corner">Grateful for every memory we share</p>
                         </div>
-                        <div class="page-back"></div>
+
+                        <div class="back_page">
+                            <label for="page5_checkbox"></label>
+                            <img class="edge_shading" src="./assets/images/back_page_edge_shading.webp" alt="Back page edge shading">
+                            <img class="back_content" src="./assets/images/pages/page10.webp" alt="Back content">
+                            <p class="page-message page-message--bottom">Keep shining — the world needs your light</p>
+                        </div>
                     </div>
 
+                    <div class="back_cover">
+                        <p class="page-message page-message--cover-back">With love, always ♥</p>
+                    </div>
                 </div>
             </div>
-            <!-- <p class="hint-text">Scroll up to open the book and flip pages</p> -->
         </div>
-    </section>
+    </div>
 
-    <!-- STEP: Finale -->
-    <section class="step" id="step-finale" data-scene="finale">
-        <div class="center-content">
-            <div class="finale-container">
-                <div class="finale-card">
-                    <svg class="floral-svg" viewBox="0 0 400 400" aria-hidden="true">
-                        <path id="vine1" d="M10,200 C40,100 150,100 200,200 S360,300 390,200" />
-                        <path id="vine2" d="M10,210 C40,310 150,310 200,210 S360,110 390,210" />
-                    </svg>
-                    <h1 class="finale-greeting">Happy Birthday</h1>
-                    <h2 class="finale-name">Manvanth!</h2>
-                    <p class="finale-wish">Wishing you a day as magical as this story, and a year filled with wonderful
-                        new beginnings. May all your dreams blossom.</p>
-                </div>
-            </div>
-            <p class="hint-text">Scroll down to go back</p>
+    <!-- Toggle mode button -->
+    <!-- <button id="toggle-mode-btn">
+        <i class="bi bi-moon-stars-fill"></i>
+    </button> -->
+
+   
+    <!-- Rotate phone (portrait mobile only) -->
+    <div id="rotate-device-overlay" aria-live="polite">
+        <div class="rotate-device-card">
+            <i class="bi bi-phone-landscape rotate-device-icon" aria-hidden="true"></i>
+            <p class="rotate-device-title">Rotate your phone</p>
+            <p class="rotate-device-text">This birthday card is best viewed in landscape. Turn your device sideways to continue.</p>
         </div>
-    </section>
-
-    <script src="script.js"></script>
+    </div>
 </body>
 
 </html>

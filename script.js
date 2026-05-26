@@ -1,203 +1,247 @@
-// script.js (updated)
-document.addEventListener('DOMContentLoaded', () => {
-    const backgroundMusic = document.getElementById('backgroundMusic');
+/*********************
+ * SCROLL-DRIVEN BOOK *
+ *********************/
 
-    // Elements
-    const giftContainer = document.getElementById('giftContainer');
-    const storybookContainer = document.getElementById('storybookContainer');
-    const book = document.getElementById('book');
-    const bookCover = document.getElementById('bookCover');
-    const pages = Array.from(document.querySelectorAll('.page'));
-    const stepsSections = {
-        gift: document.getElementById('step-gift'),
-        book: document.getElementById('step-book'),
-        finale: document.getElementById('step-finale'),
-    };
+const ScrollFlipBook = (() => {
+	const PHASE_ZOOM_END = 0.45;
+	const COMPACT_VIEWPORT_QUERY =
+		"(max-width: 768px), ((max-height: 520px) and (orientation: landscape) and (pointer: coarse))";
 
-    // Record initial z-index (so we can restore when un-flipping)
-    const initialZIndices = pages.map(p => {
-        const z = window.getComputedStyle(p).zIndex;
-        p.dataset.initialZ = (z && z !== 'auto') ? z : '';
-        return p.dataset.initialZ;
-    });
+	const TABLE_POSE_DESKTOP = {
+		scale: 0.62,
+		rotateX: 28,
+		rotateY: 3,
+		rotateZ: 8,
+		translateX: -12,
+		translateY: 2,
+	};
 
-    /* Sequence build (no off-by-one)
-       0 -> gift
-       1 -> book-show
-       2 -> book-open
-       3 -> page-0 (first page)
-       4 -> page-1 (second page)
-       ...
-       last -> finale
-    */
-    const sequence = [];
-    sequence.push({ name: 'gift' });
-    sequence.push({ name: 'book-show' });
-    sequence.push({ name: 'book-open' });
+	const TABLE_POSE_MOBILE = {
+		scale: 0.32,
+		rotateX: 28,
+		rotateY: 3,
+		rotateZ: 8,
+		translateX: -6,
+		translateY: 0,
+	};
 
-    const totalPages = pages.length - 1;
-    for (let i = -1; i < totalPages; i++) sequence.push({ name: `page-${i}` });
+	const FLAT_POSE = {
+		scale: 1,
+		rotateX: 0,
+		rotateY: 0,
+		rotateZ: 0,
+		translateX: 0,
+		translateY: 0,
+	};
 
-    sequence.push({ name: 'finale' });
+	const FLIP_CHECKBOX_IDS = [
+		"cover_checkbox",
+		"page1_checkbox",
+		"page2_checkbox",
+		"page3_checkbox",
+		"page4_checkbox",
+		"page5_checkbox",
+	];
 
-    let seqIndex = 0;
-    let busy = false; // throttle
-    const THROTTLE = 600; // ms
+	const scrollContainer = document.querySelector(".scroll-container");
+	const zoomBook = document.getElementById("zoomBook");
+	const flipCheckboxes = FLIP_CHECKBOX_IDS.map((id) => document.getElementById(id));
+	const compactViewportMedia = window.matchMedia(COMPACT_VIEWPORT_QUERY);
 
-    // Helper: show/hide top-level sections
-    function showSectionForScene(sceneName) {
-        if (sceneName === 'gift') activateSection(stepsSections.gift);
-        else if (sceneName.startsWith('book') || sceneName.startsWith('page')) activateSection(stepsSections.book);
-        else if (sceneName === 'finale') activateSection(stepsSections.finale);
-    }
+	function getTablePose() {
+		return compactViewportMedia.matches ? TABLE_POSE_MOBILE : TABLE_POSE_DESKTOP;
+	}
 
-    function activateSection(sectionEl) {
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        sectionEl.classList.add('active');
-    }
+	function clamp(value, min = 0, max = 1) {
+		return Math.min(max, Math.max(min, value));
+	}
 
-    // Only change classes that need changing (avoid re-triggering animations)
-    function updatePagesFlip(targetCount) {
-        // targetCount = number of pages that should be flipped (e.g., pageIndex + 1)
-        pages.forEach((p, i) => {
-            const shouldFlip = i < targetCount;
-            const isFlipped = p.classList.contains('flipped');
+	function easeInOutCubic(t) {
+		return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+	}
 
-            if (shouldFlip && !isFlipped) {
-                // new flip -> add class (this will animate only newly flipped page)
-                p.classList.add('flipped');
-            } else if (!shouldFlip && isFlipped) {
-                // un-flip (when rewinding)
-                p.classList.remove('flipped');
-            }
+	function lerp(a, b, t) {
+		return a + (b - a) * t;
+	}
 
-            // Visual stacking: make flipped pages stack by their index so later pages are above earlier ones
-            if (shouldFlip) {
-                p.style.zIndex = 1000 + i; // higher i -> higher z-index
-            } else {
-                // restore initial z (or clear inline style)
-                p.style.zIndex = p.dataset.initialZ || '';
-            }
-        });
-    }
+	function lerpPose(from, to, t) {
+		return {
+			scale: lerp(from.scale, to.scale, t),
+			rotateX: lerp(from.rotateX, to.rotateX, t),
+			rotateY: lerp(from.rotateY, to.rotateY, t),
+			rotateZ: lerp(from.rotateZ, to.rotateZ, t),
+			translateX: lerp(from.translateX, to.translateX, t),
+			translateY: lerp(from.translateY, to.translateY, t),
+		};
+	}
 
-    // Utility: try to play music on first interaction
-    function ensureMusicPlays() {
-        if (backgroundMusic && backgroundMusic.paused) {
-            backgroundMusic.play().catch(() => { /* ignore autoplay restrictions */ });
-            backgroundMusic.volume = 0.6; // lower volume
-        }
-    }
-    ensureMusicPlays();
-    // Apply visuals for a particular sequence index
-    function applySequenceState(index) {
-        const item = sequence[index];
+	function poseToTransform(pose) {
+		const tx =
+			pose.translateX === 0
+				? "-50%"
+				: `calc(-50% + ${pose.translateX}vw)`;
+		const ty =
+			pose.translateY === 0
+				? "-50%"
+				: `calc(-50% + ${pose.translateY}vh)`;
 
-        // Preserve page flip state when possible (don't blindly remove .flipped)
-        // Reset top-level UI flags that are scene-specific
-        giftContainer.classList.remove('open');
-        storybookContainer.classList.remove('visible', 'opening', 'open');
-        bookCover.classList.remove('flipped');
+		return [
+			`translate(${tx}, ${ty})`,
+			`scale(${pose.scale})`,
+			`rotateX(${pose.rotateX}deg)`,
+			`rotateY(${pose.rotateY}deg)`,
+			`rotateZ(${pose.rotateZ}deg)`,
+		].join(" ");
+	}
 
-        if (item.name === 'gift') {
-            showSectionForScene('gift');
-            updatePagesFlip(0); // no pages flipped
-        } else if (item.name === 'book-show') {
-            showSectionForScene('book');
-            storybookContainer.classList.add('visible');
-            updatePagesFlip(0);
-            ensureMusicPlays();
-        } else if (item.name === 'book-open') {
-            showSectionForScene('book');
-            storybookContainer.classList.add('visible', 'opening');
-            // flip the cover after a short delay for nice timing
-            setTimeout(() => bookCover.classList.add('flipped'), 300);
-            updatePagesFlip(0);
-            ensureMusicPlays();
-        } else if (item.name.startsWith('page-')) {
-            showSectionForScene('book');
-            storybookContainer.classList.add('visible', 'opening', 'open');
-            // ensure cover looks opened
-            bookCover.classList.add('flipped');
+	function getScrollProgress() {
+		if (!scrollContainer) return 0;
 
-            const pageIndex = parseInt(item.name.split('-')[1], 10);
-            const targetCount = pageIndex + 1; // flip pages 0..pageIndex
-            updatePagesFlip(targetCount);
-            ensureMusicPlays();
-        } else if (item.name === 'finale') {
-            showSectionForScene('finale');
-            updatePagesFlip(pages.length);
-            ensureMusicPlays();
-        }
+		const scrollable = scrollContainer.offsetHeight - window.innerHeight;
+		if (scrollable <= 0) return 0;
 
-        // Accessibility hint: focus book when appropriate
-        if (item.name === 'book-show' || item.name.startsWith('page-') || item.name === 'book-open') {
-            book.setAttribute('tabindex', '-1');
-            book.focus({ preventScroll: true });
-        }
-    }
+		return clamp(window.scrollY / scrollable);
+	}
 
-    // Initialize
-    applySequenceState(seqIndex);
+	function applyZoomPhase(progress) {
+		const zoomT = easeInOutCubic(clamp(progress / PHASE_ZOOM_END));
+		const pose = lerpPose(getTablePose(), FLAT_POSE, zoomT);
+		zoomBook.style.transform = poseToTransform(pose);
+	}
 
-    // Advance / rewind sequence
-    function go(delta) {
-        if (busy) return;
-        if (delta > 0) {
-            if (seqIndex < sequence.length - 1) {
-                seqIndex++;
-                busy = true;
-                applySequenceState(seqIndex);
-                setTimeout(() => busy = false, THROTTLE);
-            }
-        } else if (delta < 0) {
-            if (seqIndex > 0) {
-                seqIndex--;
-                busy = true;
-                applySequenceState(seqIndex);
-                setTimeout(() => busy = false, THROTTLE);
-            }
-        }
-    }
+	function applyFlipPhase(flipProgress) {
+		const stepCount = FLIP_CHECKBOX_IDS.length;
+		// Ceil so the final page flips before scroll hits exactly 100% (floor never reached step 6)
+		const activeSteps =
+			flipProgress <= 0
+				? 0
+				: Math.min(stepCount, Math.ceil(flipProgress * stepCount));
 
-    // WHEEL handling (invert so scroll up -> forward)
-    window.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        const raw = e.deltaY;
-        if (Math.abs(raw) < 2) return;
-        const normalized = raw > 0 ? -1 : 1; // up -> 1
-        go(normalized);
-    }, { passive: false });
+		flipCheckboxes.forEach((checkbox, index) => {
+			checkbox.checked = index < activeSteps;
+		});
+	}
 
-    // TOUCH support: vertical swipe
-    let touchStartY = null;
-    window.addEventListener('touchstart', (e) => {
-        if (e.touches && e.touches.length) touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-    window.addEventListener('touchend', (e) => {
-        if (touchStartY === null) return;
-        const endY = (e.changedTouches && e.changedTouches[0].clientY) || touchStartY;
-        const diff = touchStartY - endY;
-        if (Math.abs(diff) > 30) {
-            const direction = diff > 0 ? 1 : -1; // up = 1 (next)
-            go(direction);
-        }
-        touchStartY = null;
-    }, { passive: true });
+	function resetFlipState() {
+		flipCheckboxes.forEach((checkbox) => {
+			checkbox.checked = false;
+		});
+	}
 
-    // Keyboard navigation
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowUp') go(1);
-        if (e.key === 'ArrowDown') go(-1);
-    });
+	function update() {
+		const progress = getScrollProgress();
 
-    // Gift click (fallback / accessibility)
-    giftContainer.addEventListener('click', () => {
-        if (sequence[seqIndex] && sequence[seqIndex].name === 'gift') {
-            go(1);
-        } else {
-            giftContainer.classList.toggle('open');
-            backgroundMusic.play().catch(() => { });
-        }
-    });
-});
+		if (progress < PHASE_ZOOM_END) {
+			resetFlipState();
+			applyZoomPhase(progress);
+		} else {
+			applyZoomPhase(PHASE_ZOOM_END);
+			const flipProgress = (progress - PHASE_ZOOM_END) / (1 - PHASE_ZOOM_END);
+			applyFlipPhase(flipProgress);
+		}
+	}
+
+	function init() {
+		if (!scrollContainer || !zoomBook) return;
+
+		let ticking = false;
+
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(() => {
+				update();
+				ticking = false;
+			});
+		};
+
+		window.addEventListener("scroll", onScroll, { passive: true });
+		window.addEventListener("resize", onScroll);
+		compactViewportMedia.addEventListener("change", onScroll);
+		update();
+	}
+
+	return { init, getScrollProgress, PHASE_ZOOM_END, FLIP_CHECKBOX_IDS };
+})();
+
+ScrollFlipBook.init();
+
+/*************************
+ * ROTATE DEVICE OVERLAY *
+ *************************/
+
+const RotateDevicePrompt = (() => {
+	const overlay = document.getElementById("rotate-device-overlay");
+	const MOBILE_MAX = 768;
+
+	function isMobileViewport() {
+		return window.innerWidth <= MOBILE_MAX;
+	}
+
+	function isPortrait() {
+		return window.matchMedia("(orientation: portrait)").matches;
+	}
+
+	function update() {
+		if (!overlay) return;
+
+		const show = isMobileViewport() && isPortrait();
+		overlay.classList.toggle("show", show);
+		document.body.classList.toggle("rotate-blocked", show);
+	}
+
+	function init() {
+		if (!overlay) return;
+
+		window.addEventListener("resize", update);
+		window.addEventListener("orientationchange", update);
+		update();
+	}
+
+	return { init, update };
+})();
+
+RotateDevicePrompt.init();
+
+/***********************
+ * MODE TOGGLE (opt.)  *
+ ***********************/
+
+const toggleModeBtn = document.getElementById("toggle-mode-btn");
+const portfolioLink = document.getElementById("portfolio-link");
+const responsiveWarning = document.getElementById("responsive-warning");
+const body = document.body;
+
+function applyMode(mode) {
+	body.classList.remove("light-mode", "dark-mode");
+	body.classList.add(mode);
+
+	if (!toggleModeBtn) return;
+
+	if (mode === "dark-mode") {
+		toggleModeBtn.style.color = "rgb(245, 245, 245)";
+		toggleModeBtn.innerHTML = '<i class="bi bi-sun-fill"></i>';
+		if (portfolioLink) portfolioLink.style.color = "rgb(245, 245, 245)";
+		if (responsiveWarning) responsiveWarning.style.backgroundColor = "rgb(2, 4, 8)";
+	} else {
+		toggleModeBtn.style.color = "rgb(2, 4, 8)";
+		toggleModeBtn.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+		if (portfolioLink) portfolioLink.style.color = "rgb(2, 4, 8)";
+		if (responsiveWarning) responsiveWarning.style.backgroundColor = "rgb(245, 245, 245)";
+	}
+}
+
+if (toggleModeBtn) {
+	let savedMode = localStorage.getItem("mode") ?? "light-mode";
+	applyMode(savedMode);
+
+	toggleModeBtn.addEventListener("click", () => {
+		const newMode = body.classList.contains("light-mode")
+			? "dark-mode"
+			: "light-mode";
+		applyMode(newMode);
+		localStorage.setItem("mode", newMode);
+	});
+} else {
+	body.classList.add("light-mode");
+}

@@ -1,968 +1,457 @@
-/* --- Base Colors, Fonts --- */
+/* RESET CSS */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* VARIABLES */
 :root {
-  --deep-purple: #2E0249;
-  --dark-blue: #0f153a;
-  --teal: #4ECCA3;
-  --gold: #FFD700;
-  --muted-bg: #0b0720;
-  --text-light: #F6F6F9;
-  --shadow: rgba(0, 0, 0, 0.45);
-  --book-page-top: #5d1aa3;
-  --book-page-bottom: #3a0e63;
+    --dark-color: rgb(2, 4, 8);
+    --dark-hover: rgba(255, 255, 255, 0.1);
+
+    --light-color: rgb(245, 245, 245);
+    --light-hover: rgba(0, 0, 0, 0.1);
+
+  /* Scroll animation phases */
+    --phase-zoom-end: 0.45;
+
+  /* Table placement (resting pose on the pink notepad) */
+    --table-scale: 0.62;
+    --table-rotate-x: 28deg;
+    --table-rotate-y: 3deg;
+    --table-rotate-z: 8deg;
+    --table-translate-x: -12vw;
+    --table-translate-y: 2vh;
+
+    --message-font: "Caveat", cursive;
+    --message-font-display: "Great Vibes", cursive;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Poiret+One&display=swap');
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  height: 100%;
-}
-
+/* GENERAL */
 body {
-  font-family: 'Poiret One', sans-serif;
-  background: linear-gradient(180deg, var(--muted-bg) 0%, #260bc0 10%);
-  color: var(--text-light);
-  overflow: hidden;
-  min-height: 100vh;
+    width: 100%;
+    min-height: 100vh;
+    font-family: monospace, sans-serif;
+    font-size: 0.5rem;
+    overflow-x: hidden;
+    background-color: var(--dark-color);
 }
 
-/* --- Background Blur --- */
-.background-container {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background:
-    radial-gradient(ellipse at 20% 10%, rgba(78, 204, 163, 0.05), transparent 5%),
-    radial-gradient(ellipse at 80% 90%, rgba(46, 2, 73, 0.25), transparent 20%),
-    linear-gradient(135deg, #07021a, #0b1230 60%, #071028);
-  filter: blur(12px);
+body.light-mode {
+    color: var(--dark-color);
+    background-color: var(--light-color);
 }
 
-/* --- Step Container --- */
-.step {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.8s ease, transform 0.8s ease;
+body.light-mode #toggle-mode-btn:hover {
+    background-color: var(--light-hover);
 }
 
-.step.active {
-  opacity: 1;
-  pointer-events: auto;
+body.dark-mode {
+    color: var(--light-color);
+    background-color: var(--dark-color);
 }
 
-.center-content {
-  width: 100%;
-  max-width: 980px;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+body.dark-mode #toggle-mode-btn:hover {
+    background-color: var(--dark-hover);
 }
 
-.hint-text {
-  font-size: 0.9rem;
-  opacity: 0.7;
-  margin-top: 12px;
-  color: rgba(255, 255, 255, 0.7);
+a {
+    text-decoration: none;
+    color: var(--dark-color);
 }
 
-/* --- Gift Box --- */
-.gift-container {
-  text-align: center;
-  user-select: none;
+input[type="checkbox"] {
+    display: none;
 }
 
-.gift-box {
-  position: relative;
-  width: 180px;
-  height: 180px;
-  background: linear-gradient(180deg, var(--deep-purple), #49107a);
-  border-radius: 14px;
-  box-shadow: 0 10px 40px var(--shadow),
-              0 0 18px rgba(78, 204, 163, 0.04) inset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Scroll-driven layout */
+.scroll-container {
+    height: 900vh;
+    position: relative;
 }
 
-.gift-lid {
-  position: absolute;
-  top: -24px;
-  left: -10px;
-  width: 200px;
-  height: 48px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #5d1aa3, #3a0e63);
-  transition: transform 0.7s cubic-bezier(.2, .9, .2, 1);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
-  z-index: 5;
+.sticky-scene {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    perspective: 1500px;
+    perspective-origin: 50% 45%;
 }
 
-.gift-bow::before,
-.gift-bow::after {
-  content: '';
-  position: absolute;
-  width: 34px;
-  height: 80px;
-  background: linear-gradient(180deg, var(--gold), #e6c200);
-  border-radius: 50%;
-  top: -62px;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
-  z-index: 10;
+.table-background {
+    position: absolute;
+    inset: 0;
+    background-image: url("./assets/Table_background.png");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 0;
 }
 
-.gift-bow::before { left: 68px; transform: rotate(-40deg); }
-.gift-bow::after  { left: 98px; transform: rotate(40deg); }
-
-.gift-container.open .gift-lid {
-  transform: translateY(-120px) rotate(12deg);
+#zoomBook {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 298px;
+    height: 420px;
+    transform-style: preserve-3d;
+    transform-origin: center center;
+    z-index: 1;
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+    /* Resting table pose — overridden by JS on scroll */
+    transform:
+        translate(calc(-50% + var(--table-translate-x)), calc(-50% + var(--table-translate-y)))
+        scale(var(--table-scale))
+        rotateX(var(--table-rotate-x))
+        rotateY(var(--table-rotate-y))
+        rotateZ(var(--table-rotate-z));
 }
 
-.instruction-text {
-  margin-top: 18px;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text-light);
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+body.scroll-driven #zoomBook label {
+    pointer-events: none;
+    cursor: default;
 }
 
-/* --- Storybook Container --- */
-.storybook-container {
-  perspective: 1600px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
+body.rotate-blocked .scroll-container {
+    pointer-events: none;
+    user-select: none;
 }
 
-.book {
-  width: 520px;
-  height: 380px;
-  position: relative;
-  transform-style: preserve-3d;
-  opacity: 0;
-  transform: rotateY(-30deg) scale(0.85);
-  transition: transform 1s cubic-bezier(.22, .9, .3, 1), opacity 0.8s;
+#toggle-mode-btn {
+    width: 2rem;
+    height: 2rem;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    z-index: 100;
 }
 
-.storybook-container.visible .book {
-  opacity: 1;
-  transform: rotateY(-12deg) scale(0.98);
+#portfolio-link {
+    padding-right: 0.5rem;
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    font-size: 0.75rem;
+    z-index: 100;
 }
 
-.storybook-container.opening .book {
-  transform: rotateY(0deg) scale(1.08);
+#github-link {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 100;
 }
 
-.book::before {
-  content: '';
-  position: absolute;
-  inset: -20px;
-  background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
-              radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
-  filter: blur(30px);
-  z-index: -5;
-  border-radius: 10px;
+/* Rotate device overlay (portrait mobile) */
+#rotate-device-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: rgba(12, 10, 18, 0.92);
+    backdrop-filter: blur(6px);
 }
 
-/* --- Book Cover --- */
-.book-cover {
-  position: absolute;
-  inset: 0;
-  transform-origin: left;
-  transform-style: preserve-3d;
-  transition: transform 1s cubic-bezier(.65, 0, .35, 1);
-  z-index: 40;
+#rotate-device-overlay.show {
+    display: flex;
 }
 
-.storybook-container.open .book-cover {
-  transform: rotateY(-180deg);
+.rotate-device-card {
+    max-width: 20rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    color: rgb(255, 248, 240);
 }
 
-.cover-front,
-.cover-back {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  backface-visibility: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(180deg, #2b0a45, #3f1266);
-  border: 2px solid rgba(255, 215, 0, 0.3);
+.rotate-device-icon {
+    font-size: 4rem;
+    color: rgb(255, 182, 193);
+    animation: rotate-hint 2s ease-in-out infinite;
 }
 
-.cover-front {
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+.rotate-device-title {
+    font-family: var(--message-font-display);
+    font-size: 2.25rem;
+    line-height: 1.2;
 }
 
-.cover-front::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #2b0a45, #3f1266);
-  box-shadow: inset 4px 0 15px rgba(0, 0, 0, 0.5);
-  transform: rotateY(180deg);
+.rotate-device-text {
+    font-family: var(--message-font);
+    font-size: 1.35rem;
+    line-height: 1.4;
+    opacity: 0.9;
 }
 
-.cover-back {
-  transform: rotateY(180deg);
-  background: linear-gradient(180deg, #1b0b2e, #210b36);
+@keyframes rotate-hint {
+    0%, 100% { transform: rotate(-90deg); }
+    50% { transform: rotate(0deg); }
 }
 
-.book-title {
-  font-family: 'Cinzel Decorative', serif;
-  color: var(--gold);
-  font-size: 2.6rem;
-  letter-spacing: 1px;
-  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+@media (max-width: 768px),
+       ((max-height: 520px) and (orientation: landscape) and (pointer: coarse)) {
+    :root {
+        --table-scale: 0.32;
+        --table-translate-x: -6vw;
+        --table-translate-y: 0vh;
+    }
 }
 
-/* --- Pages --- */
+/* FLIP BOOK */
+#flip_book {
+    width: 298px;
+    height: 420px;
+    position: relative;
+    transition-duration: 1s;
+    perspective: 2000px;
+}
+
+.front_cover,
+.back_cover {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2.5px 5px 5px 2.5px;
+    background-image: url(./assets/images/flip_book_edge_shading.webp);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgb(220, 20, 60);
+    box-shadow: 0 0 5px 0 rgb(25, 25, 25, 0.25);
+}
+
+.front_cover {
+    position: absolute;
+    cursor: pointer;
+    transform-origin: center left;
+    transition: transform 0.5s;
+    z-index: 99;
+}
+
+.front_cover label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+}
+
 .page {
-  position: absolute;
-  inset: 0;
-  transform-origin: left;
-  transform-style: preserve-3d;
-  transition: transform 1s ease-in-out;
-  backface-visibility: hidden;
-  overflow: hidden;
-  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
-  border: 2px solid rgba(255, 215, 0, 0.2);
-  border-radius: 6px;
+    width: 288px;
+    height: 400px;
+    position: absolute;
+    top: 10px;
+    left: 1px;
+    border-radius: 0 5px 5px 0;
+    background-color: white;
+    transform-origin: left;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+    transition-duration: 0.5s;
+}
+
+.front_page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+}
+
+.front_page label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.back_page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
+    z-index: 100;
+}
+
+.back_page label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.edge_shading {
+    width: 288px;
+    height: 400px;
+    position: absolute;
+    z-index: 98;
+}
+
+.front_content {
+    width: 287px;
+    height: 398px;
+    position: absolute;
+    top: 1px;
+    border-radius: 0 5px 5px 0;
+    z-index: 97;
 }
 
-.page img,
-.page-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-  padding: 0px;
+.back_content {
+    width: 287px;
+    height: 398px;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    border-radius: 5px 0 0 5px;
+    z-index: 97;
 }
 
-.page::before,
-.page::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  border-radius: 6px;
+.back_cover {
+    position: relative;
+    z-index: -1;
 }
 
-.page::before {
-  background: linear-gradient(180deg, #2E0249, #1b0b2e);
+/* Birthday messages on pages */
+.page-message {
+    position: absolute;
+    z-index: 99;
+    margin: 0;
+    padding: 0.35rem 0.65rem;
+    max-width: 85%;
+    font-family: var(--message-font);
+    font-weight: 600;
+    font-size: 1.15rem;
+    line-height: 1.25;
+    color: rgb(55, 30, 45);
+    text-shadow:
+        0 0 12px rgba(255, 255, 255, 0.95),
+        0 1px 2px rgba(255, 255, 255, 0.8),
+        0 0 1px rgba(255, 255, 255, 1);
+    pointer-events: none;
 }
 
-.page::after {
-  background: linear-gradient(180deg, #1b0b2e, #2E0249);
-  transform: rotateY(180deg);
+.page-message--corner {
+    right: 0.5rem;
+    bottom: 0.75rem;
+    text-align: right;
 }
 
-.page.flipped {
-  transform: rotateY(-180deg);
-  z-index: 1000;
+.page-message--bottom {
+    left: 50%;
+    bottom: 0.65rem;
+    transform: translateX(-50%);
+    text-align: center;
+    max-width: 92%;
 }
 
-/* Layer ordering */
-#page1 { z-index: 30; }
-#page2 { z-index: 20; }
-#page3 { z-index: 10; }
-
-/* --- Finale Card --- */
-.finale-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.finale-card {
-  position: relative;
-  width: 90%;
-  max-width: 680px;
-  padding: 36px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
-  border-radius: 18px;
-  border: 1px solid rgba(255, 215, 0, 0.15);
-  text-align: center;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
-}
-
-.floral-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-}
-
-.floral-svg path {
-  fill: none;
-  stroke: var(--teal);
-  stroke-width: 2;
-  stroke-linecap: round;
-  opacity: 0.18;
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: drawVines 3s ease-out 0.3s forwards;
-}
-
-@keyframes drawVines {
-  to { stroke-dashoffset: 0; }
-}
-
-.finale-greeting {
-  font-family: 'Cinzel Decorative', serif;
-  color: var(--gold);
-  font-size: 2.2rem;
-}
-
-.finale-name {
-  font-family: 'Cinzel Decorative', serif;
-  color: var(--teal);
-  font-size: 3.6rem;
-  margin: 6px 0;
-}
-
-.finale-wish {
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.6;
-  font-size: 1.05rem;
-  margin-top: 12px;
-}
-
-/* --- Responsive --- */
-@media (max-width:900px) {
-  .book { width: 420px; height: 300px; }
-  .book-title { font-size: 2rem; }
-  .finale-name { font-size: 2.6rem; }
-}
-
-@media (max-width:480px) {
-  .book { width: 320px; height: 240px; }
-  .book-title { font-size: 1.6rem; }
-  .finale-name { font-size: 2rem; }
-  .hint-text { font-size: 0.85rem; }
-}
-/* === Storybook === */
-.storybook-container {
-  perspective: 1600px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.book {
-  width: 520px;
-  height: 380px;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 1s cubic-bezier(.22, .9, .3, 1), opacity 0.8s;
-  transform: rotateY(-30deg) scale(0.85);
-  opacity: 0;
-}
-
-.storybook-container.visible .book {
-  opacity: 1;
-  transform: rotateY(-12deg) scale(0.98);
-}
-
-.storybook-container.opening .book {
-  transform: rotateY(0deg) scale(1.08);
-}
-
-/* Common book surfaces */
-.book-cover,
-.page {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-/* === Cover === */
-.book-cover {
-  transform-origin: left;
-  transition: transform 1s cubic-bezier(.65, 0, .35, 1);
-  z-index: 40;
-  border: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
-}
-
-.cover-front,
-.cover-back {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backface-visibility: hidden;
-  background: linear-gradient(180deg, #2b0a45, #3f1266);
-  border-radius: 8px;
-}
-
-.cover-front {
-  border-right: 2px solid rgba(255, 215, 0, 0.4);
-}
-
-.cover-back {
-  transform: rotateY(180deg);
-  background: linear-gradient(180deg, #1b0b2e, #210b36);
-  border-left: 2px solid rgba(255, 215, 0, 0.4);
-}
-
-.book-title {
-  font-family: 'Cinzel Decorative', serif;
-  color: var(--gold);
-  font-size: 2.6rem;
-  padding: 12px 20px;
-  border-radius: 6px;
-  letter-spacing: 1px;
-  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-  z-index: 5;
-}
-
-.storybook-container.open .book-cover {
-  transform: rotateY(-180deg);
-}
-
-/* === Pages === */
-.page {
-  transform-origin: left;
-  transition: transform 1s ease-in-out;
-  backface-visibility: hidden;
-  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
-  border-left: 2px solid rgba(255, 215, 0, 0.4);
-  border-right: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.1);
-}
-
-.page.flipped {
-  transform: rotateY(-180deg);
-  z-index: 1000;
-}
-
-.page-front,
-.page-back {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backface-visibility: hidden;
-  border-radius: 8px;
-  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
-}
-
-.page-back {
-  transform: rotateY(180deg);
-}
-
-.page-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 8px;
-  border-radius: 6px;
-}
-
-/* Layer ordering */
-#page1 { z-index: 30; }
-#page2 { z-index: 20; }
-#page3 { z-index: 10; }
-
-/* Glow around book */
-.book::before {
-  content: '';
-  position: absolute;
-  inset: -20px;
-  filter: blur(30px);
-  z-index: -5;
-  background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
-              radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
-  border-radius: 10px;
-}
-/* === Storybook === */
-.storybook-container {
-  perspective: 1600px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.book {
-  width: 520px;
-  height: 380px;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 1s cubic-bezier(.22, .9, .3, 1), opacity 0.8s;
-  transform: rotateY(-30deg) scale(0.85);
-  opacity: 0;
-}
-
-.storybook-container.visible .book {
-  opacity: 1;
-  transform: rotateY(-12deg) scale(0.98);
-}
-
-.storybook-container.opening .book {
-  transform: rotateY(0deg) scale(1.08);
-}
-
-/* === Cover === */
-.book-cover {
-  position: absolute;
-  inset: 0;
-  transform-origin: left;
-  transform-style: preserve-3d;
-  transition: transform 1s cubic-bezier(.65, 0, .35, 1);
-  z-index: 50;
-  border: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.15);
-  border-radius: 8px;
-}
-
-.cover-front,
-.cover-back {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backface-visibility: hidden;
-}
-
-.cover-front {
-  background: linear-gradient(180deg, #2b0a45, #3f1266);
-  border-right: 2px solid rgba(255, 215, 0, 0.4);
-}
-
-.cover-back {
-  background: linear-gradient(180deg, #1b0b2e, #210b36);
-  transform: rotateY(180deg);
-  border-left: 2px solid rgba(255, 215, 0, 0.4);
-}
-
-.book-title {
-  font-family: 'Cinzel Decorative', serif;
-  color: var(--gold);
-  font-size: 2.6rem;
-  padding: 12px 20px;
-  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-}
-
-.storybook-container.open .book-cover {
-  transform: rotateY(-180deg);
-}
-
-/* === Pages === */
-.page {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform-origin: left;
-  transform-style: preserve-3d;
-  transition: transform 1s ease-in-out;
-  backface-visibility: hidden;
-  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
-  border-left: 2px solid rgba(255, 215, 0, 0.4);
-  border-right: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.15);
-  border-radius: 8px;
-  overflow: visible;
-}
-
-/* Front and back of each page */
-.page-front,
-.page-back {
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  backface-visibility: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, var(--book-page-top), var(--book-page-bottom));
-}
-
-.page-back {
-  transform: rotateY(180deg);
-}
-
-/* Flip animation */
-.page.flipped {
-  transform: rotateY(-180deg);
-  z-index: 100;
-}
-
-/* Image styling */
-.page-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 8px;
-  border-radius: 6px;
-}
-
-/* z-index layering */
-#page1 { z-index: 40; }
-#page2 { z-index: 30; }
-#page3 { z-index: 20; }
-#page4 { z-index: 10; }
-
-.book::before {
-  content: '';
-  position: absolute;
-  inset: -20px;
-  filter: blur(30px);
-  z-index: -5;
-  background: radial-gradient(circle at 20% 20%, rgba(78, 204, 163, 0.05), transparent 8%),
-              radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.03), transparent 12%);
-  border-radius: 10px;
-}
-.page-content {
-  padding: 24px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 16px;
-  font-family: "Poppins", sans-serif;
-  color: var(--text-light);
-}
-
-.page-content h2 {
-  color: var(--gold);
-  font-size: 1.6rem;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.page-content h3 {
-  color: var(--teal);
-  font-size: 1.3rem;
-  margin-bottom: 8px;
-}
-
-.page-content p,
-.page-content li,
-.page-content blockquote {
-  font-size: 1rem;
-  line-height: 1.5;
-  margin: 4px 0;
-}
-
-.page-content ul {
-  list-style: none;
-  padding: 0;
-}
-
-.page-content blockquote {
-  font-style: italic;
-  border-left: 3px solid var(--gold);
-  padding-left: 10px;
-}
-
-.page-gallery {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  /* flex-wrap: wrap; */
-  margin-top: 10px;
-  perspective: 800px;
-}
-
-.page-gallery img {
-  width: 28%;
-  height: 85%;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 5px solid #fff;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-  transform-origin: center;
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-/* Add scrapbook-like twists for a natural messy look */
-.page-gallery img:nth-child(1) {
-  transform: rotate(-6deg) translateY(4px);
-}
-.page-gallery img:nth-child(2) {
-  transform: rotate(3deg) translateY(-6px);
-}
-.page-gallery img:nth-child(3) {
-  transform: rotate(-2deg) translateY(5px);
-}
-
-/* Hover animation for fun effect */
-.page-gallery img:hover {
-  transform: scale(1.08) rotate(0deg);
-  box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
-  z-index: 5;
-}
-
-.photo {
-  position: relative;
-  background: #fff;
-  border-radius: 6px;
-  padding: 6px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-}
-
-.photo img {
-  width: 130px;
-  height: 110px;
-  border-radius: 4px;
-  object-fit: cover;
-}
-
-.photo span {
-  display: block;
-  font-size: 0.8rem;
-  font-family: 'Caveat', cursive;
-  margin-top: 4px;
-  color: #444;
-  text-align: center;
-}
-
-.photo:nth-child(1) { transform: rotate(-6deg); }
-.photo:nth-child(2) { transform: rotate(3deg); }
-.photo:nth-child(3) { transform: rotate(-2deg); }
-
-.photo:hover {
-  transform: rotate(0deg) scale(1.05);
-  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.25);
-}
-
-/* --- Fonts --- */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Great+Vibes&family=Poiret+One&family=Marcellus&display=swap');
-
-/* --- Page Text Styling --- */
-.page-front, .page-back {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px 30px;
-  text-align: center;
-  font-family: 'Marcellus', serif;
-  color: #f8f5ff;
-}
-
-.page-front h2, 
-.page-back h2 {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 2rem;
-  color: var(--gold);
-  margin-bottom: 10px;
-  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
-}
-
-.page-front p, 
-.page-back p {
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
-  font-family: 'Poiret One', sans-serif;
-}
-
-/* --- Fancy handwritten highlights --- */
-.handwritten {
-  font-family: 'Great Vibes', cursive;
-  color: var(--teal);
-  font-size: 1.6rem;
-  margin-top: 8px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+.page-message--cover,
+.page-message--cover-back {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--message-font-display);
+    font-size: 2rem;
+    font-weight: 400;
+    color: rgb(255, 248, 245);
+    text-shadow:
+        0 2px 8px rgba(80, 10, 30, 0.55),
+        0 0 20px rgba(0, 0, 0, 0.25);
+    max-width: 90%;
+    text-align: center;
 }
 
-/* --- Scrapbook Gallery --- */
-.page-gallery {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 20px;
+/* Back-page text uses the same coords as front; parent .back_page is already rotated */
+.back_page .page-message--bottom {
+    transform: translateX(-50%);
 }
 
-/* Each photo frame */
-.photo {
-  position: relative;
-  width: 130px;
-  height: 120px;
-  background: #fff;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.4),
-    inset 0 0 4px rgba(255, 215, 0, 0.25);
-  transform-origin: center;
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-  padding: 6px 6px 20px 6px;
-  cursor: pointer;
+.back_page .page-message--corner {
+    right: 0.5rem;
+    left: auto;
+    text-align: right;
 }
 
-/* Polaroid image itself */
-.photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 215, 0, 0.2);
+#page1 {
+    z-index: 8;
 }
 
-/* Caption area */
-.photo span {
-  display: block;
-  position: absolute;
-  bottom: 4px;
-  left: 0;
-  right: 0;
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.9rem;
-  color: #3a0e63;
-  text-align: center;
+#page2 {
+    z-index: 5;
 }
-
-/* Twisted layout for scrapbook feel */
-.photo:nth-child(1) { transform: rotate(-7deg); }
-.photo:nth-child(2) { transform: rotate(4deg); }
-.photo:nth-child(3) { transform: rotate(-3deg); }
 
-.photo:hover {
-  transform: rotate(0deg) scale(1.07);
-  box-shadow: 0 12px 25px rgba(255, 215, 0, 0.35);
-  z-index: 5;
+#page3 {
+    z-index: 4;
 }
 
-/* Add subtle border glow when active */
-.photo:hover img {
-  border-color: rgba(255, 215, 0, 0.6);
+#page4 {
+    z-index: 3;
 }
-/* --- Refined Page Layout (better fit inside book) --- */
-.page-front, .page-back {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 16px 24px;
-  text-align: center;
-  font-family: 'Marcellus', serif;
-  color: #f8f5ff;
-  /* overflow: hidden; */
-}
 
-/* Smaller & balanced headings */
-.page-front h2, 
-.page-back h2 {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: 1.6rem;
-  color: var(--gold);
-  margin-bottom: 6px;
-  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+#page5 {
+    z-index: 2;
 }
 
-/* Text body now more compact */
-.page-front p, 
-.page-back p {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0 auto;
-  width: 90%;
-  color: rgba(255, 255, 255, 0.9);
-  font-family: 'Poiret One', sans-serif;
+#cover_checkbox:checked~#flip_book {
+    transform: translateX(144px);
 }
 
-/* Fancy handwritten subtitle */
-.handwritten {
-  font-family: 'Great Vibes', cursive;
-  color: var(--teal);
-  font-size: 1.2rem;
-  margin-top: 4px;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+#cover_checkbox:checked~#flip_book .front_cover {
+    transform: rotateY(-180deg);
+    transition: transform 1.5s, z-index 0.5s 0.5s;
+    z-index: 1;
 }
 
-/* --- Gallery now fits inside page --- */
-.page-gallery {
-  /* display: flex; */
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  /* flex-wrap: wrap; */
-  margin-top: 10px;
-  padding-bottom: 6px;
+#cover_checkbox:checked~#flip_book #cover {
+    width: 80%;
+    height: 80%;
+    position: absolute;
 }
 
-/* Photo size reduced and balanced */
-.photo {
-  position: relative;
-  width: 95px;
-  height: 90px;
-  background: #fff;
-  border-radius: 4px;
-  border: 2px solid rgba(255, 215, 0, 0.4);
-  box-shadow:
-    0 6px 15px rgba(0, 0, 0, 0.4),
-    inset 0 0 4px rgba(255, 215, 0, 0.25);
-  transform-origin: center;
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-  padding: 4px 4px 16px 4px;
-  cursor: pointer;
+#page1_checkbox:checked~#flip_book #page1 {
+    transform: rotateY(-180deg);
+    z-index: 3;
 }
 
-.photo img {
-  width: 100%;
-  height: 85%;
-  /* object-fit: cover; */
-  border-radius: 2px;
-  border: 1px solid rgba(255, 215, 0, 0.2);
+#page2_checkbox:checked~#flip_book #page2 {
+    transform: rotateY(-180deg);
+    z-index: 4;
 }
 
-/* Caption below image */
-.photo span {
-  /* position: absolute; */
-  bottom: 2px;
-  left: 0;
-  right: 0;
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.7rem;
-  color: #3a0e63;
-  text-align: center;
+#page3_checkbox:checked~#flip_book #page3 {
+    transform: rotateY(-180deg);
+    z-index: 5;
 }
-
-/* Subtle scrapbook rotation */
-.photo:nth-child(1) { transform: rotate(-5deg); }
-.photo:nth-child(2) { transform: rotate(3deg); }
-.photo:nth-child(3) { transform: rotate(-2deg); }
 
-.photo:hover {
-  transform: rotate(0deg) scale(1.05);
-  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
-  z-index: 5;
+#page4_checkbox:checked~#flip_book #page4 {
+    transform: rotateY(-180deg);
+    z-index: 6;
 }
 
-/* Responsive fine-tuning */
-@media (max-width: 600px) {
-  .page-front h2 { font-size: 1.3rem; }
-  .page-front p { font-size: 0.9rem; }
-  .photo { width: 80px; height: 75px; }
-  .photo span { font-size: 0.65rem; }
+#page5_checkbox:checked~#flip_book #page5 {
+    transform: rotateY(-180deg);
+    z-index: 9;
 }
